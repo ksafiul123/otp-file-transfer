@@ -14,9 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Random;
+
 import java.util.UUID;
 
 @Service
@@ -30,10 +31,6 @@ public class FileShareService {
 
     public UploadResponse uploadFile(MultipartFile file) throws IOException {
 
-        if (file.getSize() > 5 * 1024 * 1024) {
-            throw new IllegalArgumentException("File size exceeds 5MB limit.");
-        }
-
 
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
@@ -46,7 +43,7 @@ public class FileShareService {
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
 
-        String otp = String.format("%06d", new Random().nextInt(999999));
+        String otp = String.format("%06d", new SecureRandom().nextInt(999999));
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expires = now.plusMinutes(10);
 
